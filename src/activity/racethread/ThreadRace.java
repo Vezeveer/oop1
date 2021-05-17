@@ -5,17 +5,31 @@
  */
 package activity.racethread;
 
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Vezeveer
  */
 public class ThreadRace extends javax.swing.JFrame {
 
+    public static boolean first = false;
+    public static boolean second = false;
+    public static boolean third = false;
+    public static boolean fourth = false;
+    public static boolean fifth = false;
+
+    // prevents double click on go click
+    public static boolean isRunning = false;
+
     /**
      * Creates new form ThreadRace
      */
     public ThreadRace() {
         initComponents();
+        this.setTitle("RACER");
     }
 
     /**
@@ -37,9 +51,25 @@ public class ThreadRace extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lblResult.setText("results");
+        pbOne.setStringPainted(true);
+
+        pbTwo.setStringPainted(true);
+
+        pbThree.setStringPainted(true);
+
+        pbFour.setStringPainted(true);
+
+        pbFive.setStringPainted(true);
+
+        lblResult.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblResult.setText("----");
 
         btnGo.setText("Go");
+        btnGo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -58,12 +88,12 @@ public class ThreadRace extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(127, 127, 127)
+                                .addGap(125, 125, 125)
                                 .addComponent(lblResult, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(161, 161, 161)
+                                .addGap(173, 173, 173)
                                 .addComponent(btnGo)))
-                        .addGap(0, 120, Short.MAX_VALUE)))
+                        .addGap(0, 122, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -88,6 +118,49 @@ public class ThreadRace extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoActionPerformed
+        if (!isRunning) {
+            ThreadRace.isRunning = true;
+            if (ThreadRace.pbOne.getValue() == 100) {
+                pbOne.setString(null);
+                pbTwo.setString(null);
+                pbThree.setString(null);
+                pbFour.setString(null);
+                pbFive.setString(null);
+
+                ThreadRace.lblResult.setText("----");
+            }
+
+            Thread t1 = new Thread(new Task(pbOne));
+            t1.setName("RACER 1");
+            t1.start();
+
+            Thread t2 = new Thread(new Task(pbTwo));
+            t2.setName("RACER 2");
+            t2.start();
+
+            Thread t3 = new Thread(new Task(pbThree));
+            t3.setName("RACER 3");
+            t3.start();
+
+            Thread t4 = new Thread(new Task(pbFour));
+            t4.setName("RACER 4");
+            t4.start();
+
+            Thread t5 = new Thread(new Task(pbFive));
+            t5.setName("RACER 5");
+            t5.start();
+
+            first = false;
+            second = false;
+            third = false;
+            fourth = false;
+            fifth = false;
+        }
+
+
+    }//GEN-LAST:event_btnGoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -122,15 +195,17 @@ public class ThreadRace extends javax.swing.JFrame {
                 new ThreadRace().setVisible(true);
             }
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGo;
-    private javax.swing.JLabel lblResult;
-    private javax.swing.JProgressBar pbFive;
-    private javax.swing.JProgressBar pbFour;
-    private javax.swing.JProgressBar pbOne;
-    private javax.swing.JProgressBar pbThree;
-    private javax.swing.JProgressBar pbTwo;
+    public static javax.swing.JLabel lblResult;
+    public static javax.swing.JProgressBar pbFive;
+    public static javax.swing.JProgressBar pbFour;
+    public static javax.swing.JProgressBar pbOne;
+    public static javax.swing.JProgressBar pbThree;
+    public static javax.swing.JProgressBar pbTwo;
     // End of variables declaration//GEN-END:variables
+
 }
