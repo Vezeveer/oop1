@@ -1,3 +1,5 @@
-# oop1
+# COURSE: BSCS2
+# Subject: Object Oriented Programming
 
-A repo for most of my object oriented programming course
+This repository covers the entire 2nd semester of year 2
+
