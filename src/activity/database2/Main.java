@@ -34,6 +34,7 @@ public class Main extends javax.swing.JFrame {
     DefaultTableModel tableModel;
     String setSex = "female";
     int jpgNum = 4;
+    boolean updateInProgress = false;
     
     public Main() {
         initComponents();
@@ -713,6 +714,9 @@ public class Main extends javax.swing.JFrame {
         String fName = tfSearch.getText();
         if(fName.isEmpty()){
             JOptionPane.showMessageDialog(this, "field cannot be empty");
+            btnGoToProfile.setEnabled(false);
+            btnGoToUpdate.setEnabled(false);
+            btnDelete.setEnabled(false);
             return;
         }
         
@@ -849,6 +853,8 @@ public class Main extends javax.swing.JFrame {
 
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
         
+        System.out.println("YO wtf");
+        
         try{
             Integer.parseInt(tfIDCreate.getText());
         } catch (Exception e){
@@ -875,25 +881,53 @@ public class Main extends javax.swing.JFrame {
             
             
             ResultSet rs = null;
-            rs = stmt.executeQuery("select * from PEOPLE where id = " + id);
-            
-            if(!rs.next()){
-                String sq1 = "insert into PEOPLE (id, firstname, lastname, "+
-                        "city, street, avatar) VALUES (?, ?, ?, ?, ?, ?)";
-                PreparedStatement statement = con.prepareStatement(sq1);
-                statement.setString(1, id);
-                statement.setString(2, firstName);
-                statement.setString(3, lastName);
-                statement.setString(4, city);
-                statement.setString(5, street);
-                statement.setString(6, avatar);
+            if(updateInProgress){
+                String sql = "update PEOPLE set firstname=?, lastname=?, city=?, "+
+                    "street=?, avatar=? WHERE id=?";
+                PreparedStatement statement = con.prepareStatement(sql);
                 
-                System.out.println("Executing...");
-                int rowsInserted = statement.executeUpdate();
-                if (rowsInserted > 0){
-                    JOptionPane.showMessageDialog(this, "Record added");
+                statement.setString(1, firstName);
+                statement.setString(2, lastName);
+                statement.setString(3, city);
+                statement.setString(4, street);
+                statement.setString(5, avatar);
+                statement.setString(6, id);
+                int rowUpdated = statement.executeUpdate();
+            
+                if(rowUpdated > 0){
+                    JOptionPane.showMessageDialog(this, "Record updated");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Update failed");
+                }
+                
+                updateInProgress = false;
+            } else {
+                rs = stmt.executeQuery("select * from PEOPLE where id = " + id);
+                if(!rs.next()){
+                    System.out.println("Went thru here...2");
+                
+                    String sq1 = "insert into PEOPLE (id, firstname, lastname, "+
+                        "city, street, avatar) VALUES (?, ?, ?, ?, ?, ?)";
+                    PreparedStatement statement = con.prepareStatement(sq1);
+                    statement.setString(1, id);
+                    statement.setString(2, firstName);
+                    statement.setString(3, lastName);
+                    statement.setString(4, city);
+                    statement.setString(5, street);
+                    statement.setString(6, avatar);
+                
+                    System.out.println("Executing...");
+                    int rowsInserted = statement.executeUpdate();
+                    if (rowsInserted > 0){
+                        JOptionPane.showMessageDialog(this, "Record added");
+                    }
                 }
             }
+            
+            
+            
+            
+            
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -901,6 +935,8 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSubmitActionPerformed
 
     private void btnGoToUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoToUpdateActionPerformed
+        
+        updateInProgress = true;
         
         lblAvatarCreate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/"+tblSearch.getValueAt(tblSearch.getSelectedRow(), 5).toString()+".jpg")));
         tfFirstNameCreate.setText(tblSearch.getValueAt(tblSearch.getSelectedRow(), 1).toString());
@@ -948,6 +984,10 @@ public class Main extends javax.swing.JFrame {
         if(tableModel != null)
             tableModel.setRowCount(0);
         
+        btnGoToProfile.setEnabled(false);
+        btnGoToUpdate.setEnabled(false);
+        btnDelete.setEnabled(false);
+        
         boolean idSelected = false;
         
         try {
@@ -971,6 +1011,7 @@ public class Main extends javax.swing.JFrame {
                     });
                 }while(rs.next());
             }
+            
             rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
